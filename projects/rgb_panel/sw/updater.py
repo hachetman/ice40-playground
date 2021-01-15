@@ -105,6 +105,7 @@ class updater(threading.Thread):
             response = self.request_wrapper(self.base_url + "sun.sun",
                                              self.headers)
             response_json = json.loads(response.text)
+
             self.sun = response_json['state']
 
             response = self.request_wrapper(self.base_url + "sensor.co2",
@@ -116,24 +117,13 @@ class updater(threading.Thread):
             response_json = json.loads(response.text)
             self.ping = int(float(response_json['attributes']['round_trip_time_avg']))
 
-            response = self.request_wrapper(self.base_url + "sensor.openweathermap_humidity",
+            response = self.request_wrapper(self.base_url + "weather.home",
                                              self.headers)
             response_json = json.loads(response.text)
-            self.humidity = int(response_json['state'])
-            response = self.request_wrapper(self.base_url + "sensor.openweathermap_temperature",
-                                             self.headers)
-            response_json = json.loads(response.text)
-            self.temperature = int(float(response_json['state']))
-            response = self.request_wrapper(self.base_url + "sensor.openweathermap_rain",
-                                            self.headers)
-            response_json = json.loads(response.text)
-            if response_json['state'] == 'not raining':
-                self.rain = 0.0
-            else:
-                self.rain = int(float(response_json['state']))
-
-
-
+            print(response_json['attributes']['forecast'][0]['precipitation'])                                    
+            self.humidity = int(response_json['attributes']['humidity'])
+            self.temperature = int(response_json['attributes']['temperature'])
+            self.rain = int(response_json['attributes']['forecast'][0]['precipitation'])                        
         except Exception as e:
                 print(e)
         self.data_lock.release()
